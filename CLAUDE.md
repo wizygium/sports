@@ -30,9 +30,23 @@ sports/
 ├── .gitignore                         # Git ignore patterns
 │
 ├── sports/                            # Main package directory
-│   ├── __init__.py                    # Package initialization (empty)
+│   ├── __init__.py                    # Package initialization
 │   │
-│   ├── annotators/                    # Visualization and annotation tools
+│   ├── soccer/                        # ⚽ Soccer module (legacy structure)
+│   │   └── config.py                  # SoccerPitchConfiguration
+│   │
+│   ├── handball/                      # 🤾 Handball module (feat/handball branch)
+│   │   ├── config.py                  # CourtConfiguration (IHF standard)
+│   │   ├── annotators.py              # Court drawing functions
+│   │   ├── tools.py                   # GoalEventTracker
+│   │   └── handball_court_geometry.py # D-shaped arc geometry
+│   │
+│   ├── basketball/                    # 🏀 Basketball module (feat/handball branch)
+│   │   ├── config.py                  # CourtConfiguration (NBA/FIBA)
+│   │   ├── annotators.py              # Court drawing functions
+│   │   └── tools.py                   # Shot tracking utilities
+│   │
+│   ├── annotators/                    # Legacy annotators (to be deprecated)
 │   │   ├── __init__.py
 │   │   └── soccer.py                  # Soccer-specific annotators
 │   │                                  # - draw_pitch()
@@ -42,11 +56,12 @@ sports/
 │   │
 │   ├── common/                        # Shared utilities across sports
 │   │   ├── __init__.py
+│   │   ├── core.py                    # MeasurementUnit enum (feat/handball)
 │   │   ├── ball.py                    # BallTracker, BallAnnotator classes
 │   │   ├── team.py                    # TeamClassifier using SigLIP + UMAP + KMeans
 │   │   └── view.py                    # ViewTransformer for perspective transforms
 │   │
-│   └── configs/                       # Sport-specific configurations
+│   └── configs/                       # Legacy configs (to be deprecated)
 │       ├── __init__.py
 │       └── soccer.py                  # SoccerPitchConfiguration dataclass
 │                                      # - Pitch dimensions, vertices, edges
@@ -183,6 +198,42 @@ pip install -r requirements.txt
 - This is a feature branch for adding Claude documentation
 - Main branch tracking not specified in git config
 - Follow standard GitHub Flow practices
+
+**Active Development Branches**:
+- `feat/handball` - Contains handball and basketball support (see below)
+
+### In-Development Sports (feat/handball branch)
+
+The `feat/handball` branch contains two additional sports implementations:
+
+#### 🤾 Handball
+- **Module**: `sports/handball/`
+- **Configuration**: `CourtConfiguration` with IHF standard dimensions
+  - Court: 40m × 20m (4000cm × 2000cm)
+  - Goal area (6m line): D-shaped arc with 6m radius
+  - Free throw line (9m line): D-shaped arc with 9m radius
+  - Penalty mark: 7m line
+- **Annotators**:
+  - `draw_court()` - Renders handball court with D-shaped arcs
+  - `draw_goals_on_court()` - Goals (circles), saves (squares), blocks (crosses)
+  - `draw_points_on_court()` - Generic point visualization
+  - `draw_paths_on_court()` - Player movement paths
+- **Tools**: `GoalEventTracker` for tracking goal events
+
+#### 🏀 Basketball
+- **Module**: `sports/basketball/`
+- **Configuration**: `CourtConfiguration` with NBA/FIBA standards
+  - NBA: 94ft × 50ft (2865cm × 1524cm)
+  - FIBA: 28m × 15m (2800cm × 1500cm)
+  - Three-point arc, paint area, free throw line
+- **Annotators**:
+  - `draw_court()` - Renders basketball court with arcs
+  - `draw_made_and_miss_on_court()` - Shot visualization
+  - `draw_points_on_court()` - Generic point visualization
+  - `draw_paths_on_court()` - Player movement paths
+- **Tools**: Shot tracking and analysis utilities
+
+**Note**: These features are in active development and not yet merged to main.
 
 ## Soccer Example Modes
 
