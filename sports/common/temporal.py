@@ -94,3 +94,34 @@ class ConsecutiveValueTracker:
         Snapshot of validated assignments. Excludes None values.
         """
         return {tid: val for tid, val in self._validated.items() if val is not None}
+
+
+class TeamVoter:
+    """
+    Temporal voting for Team ID assignment.
+    Keeps a rolling window of team IDs for each track_id and returns the most common one.
+    """
+    def __init__(self, window_size: int = 30):
+        self.window_size = window_size
+        self.history: Dict[int, List[int]] = {}
+
+    def add(self, track_id: int, team_id: int):
+        if track_id not in self.history:
+            self.history[track_id] = []
+        
+        self.history[track_id].append(team_id)
+        
+        if len(self.history[track_id]) > self.window_size:
+            self.history[track_id].pop(0)
+
+    def vote(self, track_id: int, default: int = 0) -> int:
+        if track_id not in self.history or not self.history[track_id]:
+            return default
+            
+        # Boyer-Moore or just simple max(count)
+        votes = self.history[track_id]
+        if not votes:
+            return default
+            
+        # Return most frequent
+        return max(set(votes), key=votes.count)
